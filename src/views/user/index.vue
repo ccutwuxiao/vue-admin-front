@@ -89,7 +89,7 @@
           <el-button type="primary" @click="saveData">确 定</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="添加用户" :visible.sync="updateDialogFormVisible">
+      <el-dialog title="编辑用户" :visible.sync="updateDialogFormVisible">
         <el-form :model="updateForm">
           <el-form-item label="Id" :label-width="formLabelWidth">
             <el-input v-model="updateForm.id" max-length="10" disabled="disabled" />
