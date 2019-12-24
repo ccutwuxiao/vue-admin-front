@@ -68,25 +68,25 @@
         />
       </div>
       <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
-        <el-form :model="addForm">
-          <el-form-item label="用户名" :label-width="formLabelWidth">
+        <el-form :model="addForm" :rules="rules" ref="addForm">
+          <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
             <el-input v-model="addForm.username" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
             <el-input v-model="addForm.password" autocomplete="off" show-password />
           </el-form-item>
-          <el-form-item label="角色" :label-width="formLabelWidth">
+          <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
             <el-select v-model="addForm.role" placeholder="角色" :label-width="formLabelWidth">
               <el-option v-for="item in roleTypeOptions" :key="item.key" :label="item.name" :value="item.key" />
             </el-select>
           </el-form-item>
-          <el-form-item label="姓名" :label-width="formLabelWidth">
+          <el-form-item label="姓名" :label-width="formLabelWidth" prop="name">
             <el-input v-model="addForm.name" autocomplete="off" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="addDialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveData">确 定</el-button>
+          <el-button type="primary" @click="saveData('addForm')">确 定</el-button>
         </div>
       </el-dialog>
       <el-dialog title="编辑用户" :visible.sync="updateDialogFormVisible">
@@ -152,7 +152,24 @@ export default {
         role: null,
         name: null
       },
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      rules: {
+        name: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        role: [
+          { required: true, message: '请选择角色', trigger: 'change' }
+        ]
+      }
     }
   },
   created() {
@@ -201,13 +218,20 @@ export default {
         this.listLoading = false
       }).catch()
     },
-    saveData() {
-      saveUser(this.addForm).then(response => {
-        this.$message.success('用户添加成功!')
-        this.addDialogFormVisible = false
-        this.fetchData()
-      }).catch((response) => {
-        this.$message.error('添加失败!')
+    saveData(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          saveUser(this.addForm).then(response => {
+            this.$message.success('用户添加成功!')
+            this.addDialogFormVisible = false
+            this.fetchData()
+          }).catch((response) => {
+            this.$message.error('添加失败!')
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     },
     updateData() {
@@ -221,4 +245,5 @@ export default {
     }
   }
 }
+
 </script>
